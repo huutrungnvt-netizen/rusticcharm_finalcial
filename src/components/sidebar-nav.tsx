@@ -5,10 +5,13 @@ import { Tag, Wallet } from "lucide-react"
 import { usePathname } from "next/navigation"
 
 import { navItems } from "@/components/nav-items"
+import { LogoutButton } from "@/components/logout-button"
 import { cn } from "@/lib/utils"
 
 export function SidebarNav() {
   const pathname = usePathname()
+
+  if (pathname === "/login") return null
 
   return (
     <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground md:flex print:hidden">
@@ -61,6 +64,7 @@ export function SidebarNav() {
           <Tag className="size-[18px]" />
           Danh mục
         </Link>
+        <LogoutButton />
       </div>
     </aside>
   )

@@ -9,6 +9,8 @@ import { cn } from "@/lib/utils"
 export function BottomNav() {
   const pathname = usePathname()
 
+  if (pathname === "/login") return null
+
   return (
     <nav
       className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80 md:hidden print:hidden"
