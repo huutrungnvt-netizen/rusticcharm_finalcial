@@ -3,7 +3,11 @@
 import { useActionState, useMemo, useState } from "react"
 import { TrendingDown, TrendingUp } from "lucide-react"
 
-import { createTransaction, type TransactionFormState } from "@/app/add/actions"
+import {
+  createTransaction,
+  updateTransaction,
+  type TransactionFormState,
+} from "@/app/add/actions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -17,7 +21,12 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { formatCurrency, toLocalISODate } from "@/lib/format"
 import { cn } from "@/lib/utils"
-import { PRODUCT_TYPES, type Category, type CategoryType } from "@/lib/types"
+import {
+  PRODUCT_TYPES,
+  type Category,
+  type CategoryType,
+  type Transaction,
+} from "@/lib/types"
 
 const paymentMethods = [
   "Tiền mặt",
@@ -29,10 +38,17 @@ const paymentMethods = [
 
 const initialState: TransactionFormState = { error: null }
 
-export function TransactionForm({ categories }: { categories: Category[] }) {
-  const [type, setType] = useState<CategoryType>("EXPENSE")
+export function TransactionForm({
+  categories,
+  transaction,
+}: {
+  categories: Category[]
+  transaction?: Transaction
+}) {
+  const isEditing = Boolean(transaction)
+  const [type, setType] = useState<CategoryType>(transaction?.type ?? "EXPENSE")
   const [state, action, pending] = useActionState(
-    createTransaction,
+    isEditing ? updateTransaction : createTransaction,
     initialState
   )
 
@@ -43,10 +59,18 @@ export function TransactionForm({ categories }: { categories: Category[] }) {
 
   const today = useMemo(() => toLocalISODate(new Date()), [])
 
-  const [unitPrice, setUnitPrice] = useState("")
-  const [quantity, setQuantity] = useState("")
-  const [discount, setDiscount] = useState("")
-  const [extraFee, setExtraFee] = useState("")
+  const [unitPrice, setUnitPrice] = useState(
+    transaction?.unit_price != null ? String(transaction.unit_price) : ""
+  )
+  const [quantity, setQuantity] = useState(
+    transaction?.quantity != null ? String(transaction.quantity) : ""
+  )
+  const [discount, setDiscount] = useState(
+    transaction ? String(transaction.discount) : ""
+  )
+  const [extraFee, setExtraFee] = useState(
+    transaction ? String(transaction.extra_fee) : ""
+  )
 
   const revenue = useMemo(() => {
     const price = Number(unitPrice) || 0
@@ -59,6 +83,9 @@ export function TransactionForm({ categories }: { categories: Category[] }) {
   return (
     <form action={action} className="flex max-w-lg flex-col gap-5">
       <input type="hidden" name="type" value={type} />
+      {transaction && (
+        <input type="hidden" name="id" value={transaction.id} />
+      )}
 
       <div className="grid grid-cols-2 gap-2 rounded-xl border border-border bg-muted/40 p-1.5">
         <button
@@ -101,6 +128,9 @@ export function TransactionForm({ categories }: { categories: Category[] }) {
               min="0"
               step="1000"
               placeholder="0"
+              defaultValue={
+                transaction?.type === "EXPENSE" ? transaction.amount : undefined
+              }
               className="h-11 text-base"
               required
             />
@@ -117,7 +147,10 @@ export function TransactionForm({ categories }: { categories: Category[] }) {
                 .
               </p>
             ) : (
-              <Select name="category_id">
+              <Select
+                name="category_id"
+                defaultValue={transaction?.category_id ?? undefined}
+              >
                 <SelectTrigger id="category_id" className="w-full">
                   <SelectValue placeholder="Chọn danh mục" />
                 </SelectTrigger>
@@ -137,12 +170,21 @@ export function TransactionForm({ categories }: { categories: Category[] }) {
         <>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="order_code">Mã đơn</Label>
-            <Input id="order_code" name="order_code" placeholder="VD: DH001" required />
+            <Input
+              id="order_code"
+              name="order_code"
+              placeholder="VD: DH001"
+              defaultValue={transaction?.order_code ?? undefined}
+              required
+            />
           </div>
 
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="product_type">Loại sản phẩm</Label>
-            <Select name="product_type">
+            <Select
+              name="product_type"
+              defaultValue={transaction?.product_type ?? undefined}
+            >
               <SelectTrigger id="product_type" className="w-full">
                 <SelectValue placeholder="Chọn loại sản phẩm" />
               </SelectTrigger>
@@ -234,14 +276,17 @@ export function TransactionForm({ categories }: { categories: Category[] }) {
           id="transaction_date"
           name="transaction_date"
           type="date"
-          defaultValue={today}
+          defaultValue={transaction?.transaction_date ?? today}
           required
         />
       </div>
 
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="payment_method">Phương thức thanh toán</Label>
-        <Select name="payment_method" defaultValue={paymentMethods[0]}>
+        <Select
+          name="payment_method"
+          defaultValue={transaction?.payment_method ?? paymentMethods[0]}
+        >
           <SelectTrigger id="payment_method" className="w-full">
             <SelectValue />
           </SelectTrigger>
@@ -257,7 +302,12 @@ export function TransactionForm({ categories }: { categories: Category[] }) {
 
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="note">Ghi chú</Label>
-        <Textarea id="note" name="note" placeholder="Ghi chú (tuỳ chọn)" />
+        <Textarea
+          id="note"
+          name="note"
+          placeholder="Ghi chú (tuỳ chọn)"
+          defaultValue={transaction?.note ?? undefined}
+        />
       </div>
 
       {state.error && (
@@ -270,7 +320,13 @@ export function TransactionForm({ categories }: { categories: Category[] }) {
         size="lg"
         className="h-11"
       >
-        {pending ? "Đang lưu..." : "Lưu giao dịch"}
+        {pending
+          ? isEditing
+            ? "Đang cập nhật..."
+            : "Đang lưu..."
+          : isEditing
+            ? "Cập nhật giao dịch"
+            : "Lưu giao dịch"}
       </Button>
     </form>
   )

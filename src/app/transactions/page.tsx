@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Plus, Receipt, Scale, TrendingDown, TrendingUp } from "lucide-react"
+import { Pencil, Plus, Receipt, Scale, TrendingDown, TrendingUp } from "lucide-react"
 
 import { deleteTransaction } from "@/app/transactions/actions"
 import { CategoryIcon } from "@/components/category-icon"
@@ -127,6 +127,13 @@ export default async function TransactionsPage() {
                       {isIncome ? "+" : "-"}
                       {formatCurrency(t.amount)}
                     </span>
+                    <Link
+                      href={`/transactions/${t.id}/edit`}
+                      aria-label="Sửa giao dịch"
+                      className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
+                    >
+                      <Pencil className="size-4" />
+                    </Link>
                     <DeleteButton
                       id={t.id}
                       action={deleteTransaction}
