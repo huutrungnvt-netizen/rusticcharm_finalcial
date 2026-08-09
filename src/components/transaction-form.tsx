@@ -127,7 +127,7 @@ export function TransactionForm({
               type="number"
               inputMode="numeric"
               min="0"
-              step="1000"
+              step="1"
               placeholder="0"
               defaultValue={
                 transaction?.type === "EXPENSE" ? transaction.amount : undefined
@@ -208,7 +208,7 @@ export function TransactionForm({
                 type="number"
                 inputMode="numeric"
                 min="0"
-                step="1000"
+                step="1"
                 placeholder="0"
                 value={unitPrice}
                 onChange={(e) => setUnitPrice(e.target.value)}
@@ -238,7 +238,7 @@ export function TransactionForm({
                 type="number"
                 inputMode="numeric"
                 min="0"
-                step="1000"
+                step="1"
                 placeholder="0"
                 value={discount}
                 onChange={(e) => setDiscount(e.target.value)}
@@ -252,7 +252,7 @@ export function TransactionForm({
                 type="number"
                 inputMode="numeric"
                 min="0"
-                step="1000"
+                step="1"
                 placeholder="0"
                 value={extraFee}
                 onChange={(e) => setExtraFee(e.target.value)}
