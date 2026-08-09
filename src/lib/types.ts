@@ -36,6 +36,7 @@ export type Transaction = {
   transaction_date: string
   note: string | null
   payment_method: string | null
+  image_url: string | null
   created_at: string
 }
 

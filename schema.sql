@@ -86,6 +86,7 @@ create table if not exists public.transactions (
   transaction_date date not null default current_date,
   note text,
   payment_method text,
+  image_url text,
   created_at timestamptz not null default now()
 );
 
@@ -111,3 +112,24 @@ create policy "Transactions are updatable by owner"
 create policy "Transactions are deletable by owner"
   on public.transactions for delete
   using (auth.uid() = user_id);
+
+-- =========================================
+-- Storage: transaction-images bucket
+-- =========================================
+-- Holds images attached to transactions. Public read (served by URL);
+-- upload/delete require an authenticated session.
+insert into storage.buckets (id, name, public)
+values ('transaction-images', 'transaction-images', true)
+on conflict (id) do nothing;
+
+create policy "Public read access for transaction images"
+  on storage.objects for select
+  using (bucket_id = 'transaction-images');
+
+create policy "Authenticated users can upload transaction images"
+  on storage.objects for insert
+  with check (bucket_id = 'transaction-images' and auth.role() = 'authenticated');
+
+create policy "Authenticated users can delete transaction images"
+  on storage.objects for delete
+  using (bucket_id = 'transaction-images' and auth.role() = 'authenticated');

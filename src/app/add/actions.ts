@@ -21,6 +21,7 @@ type TransactionPayload = {
   transaction_date: string
   note: string | null
   payment_method: string | null
+  image_url: string | null
 }
 
 function buildTransactionPayload(
@@ -30,6 +31,7 @@ function buildTransactionPayload(
   const transactionDate = String(formData.get("transaction_date") ?? "")
   const note = String(formData.get("note") ?? "").trim()
   const paymentMethod = String(formData.get("payment_method") ?? "").trim()
+  const imageUrl = String(formData.get("image_url") ?? "").trim()
 
   if (type !== "INCOME" && type !== "EXPENSE") {
     return { error: "Loại giao dịch không hợp lệ." }
@@ -63,6 +65,7 @@ function buildTransactionPayload(
         transaction_date: transactionDate,
         note: note || null,
         payment_method: paymentMethod || null,
+        image_url: imageUrl || null,
       },
     }
   }
@@ -115,6 +118,7 @@ function buildTransactionPayload(
       transaction_date: transactionDate,
       note: note || null,
       payment_method: paymentMethod || null,
+      image_url: imageUrl || null,
     },
   }
 }

@@ -8,6 +8,7 @@ import {
   updateTransaction,
   type TransactionFormState,
 } from "@/app/add/actions"
+import { ImageUpload } from "@/components/image-upload"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -309,6 +310,8 @@ export function TransactionForm({
           defaultValue={transaction?.note ?? undefined}
         />
       </div>
+
+      <ImageUpload defaultUrl={transaction?.image_url} />
 
       {state.error && (
         <p className="text-sm text-destructive">{state.error}</p>

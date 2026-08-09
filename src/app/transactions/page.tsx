@@ -107,7 +107,27 @@ export default async function TransactionsPage() {
                   className="group flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0"
                 >
                   <div className="flex min-w-0 items-center gap-3">
-                    <CategoryIcon icon={icon} type={isIncome ? "INCOME" : "EXPENSE"} />
+                    {t.image_url ? (
+                      <a
+                        href={t.image_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Xem ảnh giao dịch"
+                        className="shrink-0"
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={t.image_url}
+                          alt="Ảnh giao dịch"
+                          className="size-10 rounded-lg border border-border object-cover"
+                        />
+                      </a>
+                    ) : (
+                      <CategoryIcon
+                        icon={icon}
+                        type={isIncome ? "INCOME" : "EXPENSE"}
+                      />
+                    )}
                     <div className="flex min-w-0 flex-col">
                       <span className="truncate text-sm font-medium">
                         {title}
